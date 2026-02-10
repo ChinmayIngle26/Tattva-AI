@@ -1,15 +1,18 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
-import { MEMBERS, TASKS, BLOGS, EVENTS, ANNOUNCEMENTS, JOIN_REQUESTS, PROJECTS, DOMAINS, RESOURCES, ROLES } from '@/lib/data';
+import { useContent } from '@/lib/contentContext';
+import { MEMBERS, TASKS, EVENTS, JOIN_REQUESTS, PROJECTS, DOMAINS, RESOURCES, ROLES } from '@/lib/data';
 
 export default function LeadDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { settings } = useSettings();
+    const {
+        blogs, addBlog, updateBlog,
+        announcements, addAnnouncement, updateAnnouncement
+    } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     useEffect(() => {
@@ -22,9 +25,9 @@ export default function LeadDashboard() {
     const domain = DOMAINS.find(d => d.id === user?.domain);
     const domainMembers = MEMBERS.filter(m => m.domain === user?.domain);
     const domainTasks = TASKS.filter(t => t.domain === user?.domain);
-    const domainBlogs = BLOGS.filter(b => b.domain === user?.domain);
+    const domainBlogs = blogs.filter(b => b.domain === user?.domain);
     const domainEvents = EVENTS.filter(e => e.domain === user?.domain || e.domain === null);
-    const domainAnnouncements = ANNOUNCEMENTS.filter(a => a.domain === user?.domain || a.type === 'global');
+    const domainAnnouncements = announcements.filter(a => a.domain === user?.domain || a.type === 'global');
     const domainProjects = PROJECTS.filter(p => p.domain === user?.domain);
     const allJoins = JOIN_REQUESTS.filter(j => j.domain === user?.domain);
     const pendingJoins = allJoins.filter(j => j.status === 'pending');
@@ -34,13 +37,35 @@ export default function LeadDashboard() {
     const [taskModal, setTaskModal] = useState(false);
     const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium', deadline: '' });
     const [createdTasks, setCreatedTasks] = useState([]);
+
+    const [blogModal, setBlogModal] = useState(false); // Added
+    const [newBlog, setNewBlog] = useState({ title: '', excerpt: '', content: '', category: 'Tutorials', readTime: '5 min read', tags: '' }); // Added
+
     const [announcementModal, setAnnouncementModal] = useState(false);
     const [newAnnouncement, setNewAnnouncement] = useState({ title: '', message: '', priority: 'normal' });
     const [createdAnnouncements, setCreatedAnnouncements] = useState([]);
-    const [memberModal, setMemberModal] = useState(null); // member object or null
+    const [memberModal, setMemberModal] = useState(null);
     const [actionFeedback, setActionFeedback] = useState('');
 
     const showFeedback = (msg) => { setActionFeedback(msg); setTimeout(() => setActionFeedback(''), 3000); };
+
+    const handleCreateBlog = (e) => {
+        e.preventDefault();
+        const slug = newBlog.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const blogData = {
+            ...newBlog,
+            slug,
+            author: user.name,
+            authorAvatar: '🧑‍💻',
+            domain: user.domain,
+            tags: newBlog.tags.split(',').map(t => t.trim()),
+            featured: false,
+        };
+        addBlog(blogData);
+        setBlogModal(false);
+        setNewBlog({ title: '', excerpt: '', content: '', category: 'Tutorials', readTime: '5 min read', tags: '' });
+        showFeedback('Blog post published!');
+    };
 
     const handleJoinAction = (id, action) => {
         setJoinActions(prev => ({ ...prev, [id]: action }));
@@ -66,7 +91,21 @@ export default function LeadDashboard() {
     const allTasks = [...domainTasks, ...createdTasks];
     const allAnnouncements = [...domainAnnouncements, ...createdAnnouncements];
 
-    const tabs = ['overview', 'members', 'tasks', 'join requests', 'blogs', 'events', 'announcements', 'projects'];
+    // Filter content for approvals
+    const pendingBlogs = blogs.filter(b => b.status === 'pending' && b.domain === user?.domain);
+    const pendingAnnouncements = announcements.filter(a => a.status === 'pending' && (a.domain === user?.domain || a.type === 'global')); // Global anns might need lead approval too
+
+    const tabs = ['overview', 'approvals', 'members', 'tasks', 'join requests', 'blogs', 'events', 'announcements', 'projects'];
+
+    const handleBlogApproval = (slug, approved) => {
+        updateBlog(slug, { status: approved ? 'published' : 'rejected' });
+        showFeedback(`Blog ${approved ? 'approved' : 'rejected'}`);
+    };
+
+    const handleAnnApproval = (id, approved) => {
+        updateAnnouncement(id, { status: approved ? 'published' : 'rejected' });
+        showFeedback(`Announcement ${approved ? 'approved' : 'rejected'}`);
+    };
 
     return (
         <div className="dashboard-layout">
@@ -91,11 +130,14 @@ export default function LeadDashboard() {
                     {tabs.map(tab => (
                         <div key={tab} className={`sidebar-link ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)} style={{ cursor: 'pointer', textTransform: 'capitalize' }}>
                             <span className="link-icon">{
-                                { overview: '📊', members: '👥', tasks: '✅', 'join requests': '📩', blogs: '📝', events: '📅', announcements: '📢', projects: '🚀' }[tab]
+                                { overview: '📊', approvals: '⚖️', members: '👥', tasks: '✅', 'join requests': '📩', blogs: '📝', events: '📅', announcements: '📢', projects: '🚀' }[tab]
                             }</span>
                             {tab}
                             {tab === 'join requests' && pendingJoins.filter(j => !joinActions[j.id]).length > 0 && (
                                 <span style={{ marginLeft: 'auto', background: 'var(--accent-red)', color: '#fff', borderRadius: 'var(--radius-full)', padding: '0.1rem 0.5rem', fontSize: '0.7rem', fontWeight: 700 }}>{pendingJoins.filter(j => !joinActions[j.id]).length}</span>
+                            )}
+                            {tab === 'approvals' && (pendingBlogs.length + pendingAnnouncements.length) > 0 && (
+                                <span style={{ marginLeft: 'auto', background: 'var(--accent-amber)', color: '#fff', borderRadius: 'var(--radius-full)', padding: '0.1rem 0.5rem', fontSize: '0.7rem', fontWeight: 700 }}>{pendingBlogs.length + pendingAnnouncements.length}</span>
                             )}
                         </div>
                     ))}
@@ -113,7 +155,7 @@ export default function LeadDashboard() {
                     <>
                         <div className="stat-grid">
                             <div className="stat-card"><div className="stat-icon">👥</div><div className="stat-value">{domainMembers.length}</div><div className="stat-label">Members</div></div>
-                            <div className="stat-card"><div className="stat-icon">📋</div><div className="stat-value">{allTasks.length}</div><div className="stat-label">Tasks</div></div>
+                            <div className="stat-card"><div className="stat-icon">⚖️</div><div className="stat-value" style={{ color: (pendingBlogs.length + pendingAnnouncements.length) > 0 ? 'var(--accent-amber)' : undefined }}>{pendingBlogs.length + pendingAnnouncements.length}</div><div className="stat-label">Pending Approvals</div></div>
                             <div className="stat-card"><div className="stat-icon">📩</div><div className="stat-value" style={{ color: pendingJoins.filter(j => !joinActions[j.id]).length > 0 ? 'var(--accent-amber)' : undefined }}>{pendingJoins.filter(j => !joinActions[j.id]).length}</div><div className="stat-label">Pending Joins</div></div>
                             <div className="stat-card"><div className="stat-icon">🚀</div><div className="stat-value">{domainProjects.length}</div><div className="stat-label">Projects</div></div>
                         </div>
@@ -149,6 +191,57 @@ export default function LeadDashboard() {
                             </div>
                         </div>
                     </>
+                )}
+
+                {/* ========== APPROVALS ========== */}
+                {activeTab === 'approvals' && (
+                    <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
+                        <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-lg)' }}>⚖️ Pending Content Approvals</h3>
+
+                        {(pendingBlogs.length === 0 && pendingAnnouncements.length === 0) ? (
+                            <p style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--text-tertiary)' }}>No pending approvals! All good. 👍</p>
+                        ) : (
+                            <div style={{ display: 'grid', gap: 'var(--space-lg)' }}>
+                                {pendingBlogs.length > 0 && (
+                                    <div>
+                                        <h4 style={{ marginBottom: 'var(--space-md)', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>📝 Blog Posts</h4>
+                                        {pendingBlogs.map(b => (
+                                            <div key={b.slug} style={{ padding: 'var(--space-md)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-sm)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div style={{ fontWeight: 600 }}>{b.title}</div>
+                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>By {b.author}</div>
+                                                </div>
+                                                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 'var(--space-xs) 0' }}>{b.excerpt}</p>
+                                                <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                                    <button className="btn btn-primary btn-sm" onClick={() => handleBlogApproval(b.slug, true)}>✓ Approve</button>
+                                                    <button className="btn btn-secondary btn-sm" onClick={() => handleBlogApproval(b.slug, false)}>✗ Reject</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {pendingAnnouncements.length > 0 && (
+                                    <div>
+                                        <h4 style={{ marginBottom: 'var(--space-md)', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>📢 Announcements</h4>
+                                        {pendingAnnouncements.map(a => (
+                                            <div key={a.id} style={{ padding: 'var(--space-md)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-sm)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div style={{ fontWeight: 600 }}>{a.title}</div>
+                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>By {a.author}</div>
+                                                </div>
+                                                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 'var(--space-xs) 0' }}>{a.message}</p>
+                                                <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                                    <button className="btn btn-primary btn-sm" onClick={() => handleAnnApproval(a.id, true)}>✓ Approve</button>
+                                                    <button className="btn btn-secondary btn-sm" onClick={() => handleAnnApproval(a.id, false)}>✗ Reject</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 {/* ========== MEMBERS ========== */}
@@ -336,7 +429,10 @@ export default function LeadDashboard() {
                     <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
                             <h3 style={{ fontSize: '1rem' }}>📝 Domain Blog Posts ({domainBlogs.length})</h3>
-                            <span className="badge badge-primary">{settings.blogPostingEnabled ? 'Posting Enabled' : '🔒 Posting Disabled'}</span>
+                            <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
+                                <span className="badge badge-primary">{settings.blogPostingEnabled ? 'Posting Enabled' : '🔒 Posting Disabled'}</span>
+                                <button className="btn btn-primary btn-sm" onClick={() => setBlogModal(true)} disabled={!settings.blogPostingEnabled || settings.dashboardsFrozen}>+ New Post</button>
+                            </div>
                         </div>
                         {domainBlogs.length === 0 ? (
                             <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: 'var(--space-2xl)' }}>No blog posts yet. Start writing! ✍️</p>
@@ -364,6 +460,49 @@ export default function LeadDashboard() {
                                 <span key={t} style={{ display: 'inline-block', padding: '0.15rem 0.5rem', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', marginLeft: 'var(--space-xs)' }}>{t}</span>
                             ))}
                         </div>
+
+                        {/* Create Blog Modal */}
+                        {blogModal && (
+                            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, backdropFilter: 'blur(4px)' }} onClick={() => setBlogModal(false)}>
+                                <div className="glass-card" style={{ padding: 'var(--space-2xl)', maxWidth: 600, width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+                                        <h3 style={{ fontSize: '1rem' }}>✍️ Write New Blog Post</h3>
+                                        <button className="btn btn-ghost btn-sm" onClick={() => setBlogModal(false)}>✕</button>
+                                    </div>
+                                    <form onSubmit={handleCreateBlog}>
+                                        <div className="form-group">
+                                            <label className="form-label">Title *</label>
+                                            <input className="form-input" required value={newBlog.title} onChange={e => setNewBlog({ ...newBlog, title: e.target.value })} placeholder="Article title" />
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
+                                            <div className="form-group">
+                                                <label className="form-label">Category</label>
+                                                <select className="form-select" value={newBlog.category} onChange={e => setNewBlog({ ...newBlog, category: e.target.value })}>
+                                                    {['Tutorials', 'Tech News', 'Tattva Capital'].map(c => <option key={c} value={c}>{c}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="form-label">Read Time</label>
+                                                <input className="form-input" value={newBlog.readTime} onChange={e => setNewBlog({ ...newBlog, readTime: e.target.value })} placeholder="e.g. 5 min read" />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Excerpt *</label>
+                                            <textarea className="form-textarea" rows={2} required value={newBlog.excerpt} onChange={e => setNewBlog({ ...newBlog, excerpt: e.target.value })} placeholder="Short summary for the card..." />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Content *</label>
+                                            <textarea className="form-textarea" rows={8} required value={newBlog.content} onChange={e => setNewBlog({ ...newBlog, content: e.target.value })} placeholder="Write your article here..." />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Tags (comma separated)</label>
+                                            <input className="form-input" value={newBlog.tags} onChange={e => setNewBlog({ ...newBlog, tags: e.target.value })} placeholder="AI, React, Tutorial" />
+                                        </div>
+                                        <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Publish Post</button>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

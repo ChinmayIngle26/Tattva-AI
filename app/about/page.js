@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useContent } from '@/lib/contentContext';
 
 const ACHIEVEMENTS = [
     { icon: '🏆', title: 'Hackathon Winners', desc: 'Multiple teams placing in inter-college hackathons' },
@@ -18,6 +19,10 @@ const TIMELINE = [
 ];
 
 export default function AboutPage() {
+    const { siteContent, loading } = useContent();
+
+    if (loading) return <div className="page-top" style={{ textAlign: 'center', padding: '100px' }}>Loading...</div>;
+
     return (
         <div className="page-top">
             {/* Header */}
@@ -38,16 +43,7 @@ export default function AboutPage() {
                         <div className="story-content glass-card" style={{ padding: 'var(--space-2xl)' }}>
                             <h2 style={{ marginBottom: 'var(--space-lg)' }}>Our Story</h2>
                             <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)', fontSize: '1.05rem', lineHeight: 1.8 }}>
-                                Tattva AI was born from a simple idea: <strong style={{ color: 'var(--text-primary)' }}>that students learn best when they build together</strong>.
-                                Founded in 2024, we started as a small study group of AI enthusiasts who wanted to go beyond classroom learning.
-                            </p>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)', fontSize: '1.05rem', lineHeight: 1.8 }}>
-                                The name &quot;Tattva&quot; comes from Sanskrit, meaning &quot;essence&quot; or &quot;fundamental principle&quot; — reflecting our belief in understanding technology
-                                at its core, not just surface-level usage. Combined with AI, it represents our commitment to mastering the essential truths of modern technology.
-                            </p>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.8 }}>
-                                Today, Tattva AI has grown into a vibrant community spanning three technical domains, with a structured mentorship program,
-                                regular workshops, hackathons, and collaborative projects that prepare students for real-world challenges.
+                                {siteContent.aboutUs}
                             </p>
                         </div>
                     </div>

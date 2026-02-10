@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/lib/auth';
 import { SettingsProvider } from '@/lib/settings';
+import { ContentProvider } from '@/lib/contentContext';
 
 export const metadata = {
   title: 'Tattva AI — Student Technical Club',
@@ -16,9 +17,11 @@ export default function RootLayout({ children }) {
       <body>
         <SettingsProvider>
           <AuthProvider>
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
+            <ContentProvider>
+              <Navbar />
+              <main>{children}</main>
+              <Footer />
+            </ContentProvider>
           </AuthProvider>
         </SettingsProvider>
       </body>

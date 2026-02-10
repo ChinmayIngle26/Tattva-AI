@@ -10,6 +10,7 @@ import MentorDashboard from './mentor/page';
 import LeadDashboard from './lead/page';
 import FacultyDashboard from './faculty/page';
 import DevDashboard from './dev/page';
+import EditorDashboard from './editor/page';
 
 export default function DashboardPage() {
     const { user, loading } = useAuth();
@@ -66,6 +67,7 @@ export default function DashboardPage() {
             case ROLES.DEV: return <DevDashboard />;
             case ROLES.LEAD: return <LeadDashboard />;
             case ROLES.MENTOR: return <MentorDashboard />;
+            case ROLES.EDITOR: return <EditorDashboard />;
             case ROLES.MEMBER: return <MemberDashboard />;
             case ROLES.FACULTY: return <FacultyDashboard />;
             default: return <MemberDashboard />;
