@@ -12,6 +12,19 @@ export default function MentorDashboard() {
     const { settings } = useSettings();
     const [activeTab, setActiveTab] = useState('overview');
 
+    // All useState hooks must be above early returns (rules-of-hooks)
+    const [reviewActions, setReviewActions] = useState({});
+    const [feedbackModal, setFeedbackModal] = useState(null);
+    const [feedbackText, setFeedbackText] = useState('');
+    const [memberModal, setMemberModal] = useState(null);
+    const [taskModal, setTaskModal] = useState(false);
+    const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium', deadline: '' });
+    const [createdTasks, setCreatedTasks] = useState([]);
+    const [resourceModal, setResourceModal] = useState(false);
+    const [newResource, setNewResource] = useState({ title: '', type: 'article', url: '' });
+    const [addedResources, setAddedResources] = useState([]);
+    const [actionFeedback, setActionFeedback] = useState('');
+
     useEffect(() => {
         if (!loading && user && user.role !== ROLES.MENTOR) {
             router.push('/dashboard');
@@ -27,19 +40,6 @@ export default function MentorDashboard() {
     const domainEvents = EVENTS.filter(e => e.domain === user?.domain || e.domain === null);
     const allSubmissions = domainTasks.flatMap(t => t.submissions.map(s => ({ ...s, taskTitle: t.title, taskId: t.id })));
     const pendingSubmissions = allSubmissions.filter(s => s.status === 'submitted');
-
-    // Interactive state
-    const [reviewActions, setReviewActions] = useState({});
-    const [feedbackModal, setFeedbackModal] = useState(null);
-    const [feedbackText, setFeedbackText] = useState('');
-    const [memberModal, setMemberModal] = useState(null);
-    const [taskModal, setTaskModal] = useState(false);
-    const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium', deadline: '' });
-    const [createdTasks, setCreatedTasks] = useState([]);
-    const [resourceModal, setResourceModal] = useState(false);
-    const [newResource, setNewResource] = useState({ title: '', type: 'article', url: '' });
-    const [addedResources, setAddedResources] = useState([]);
-    const [actionFeedback, setActionFeedback] = useState('');
 
     const showFeedback = (msg) => { setActionFeedback(msg); setTimeout(() => setActionFeedback(''), 3000); };
 

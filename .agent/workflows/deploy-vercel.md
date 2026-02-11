@@ -1,5 +1,5 @@
 ---
-description: How to host the Tattva AI site on Vercel
+description: How to host the Tattv AI site on Vercel
 ---
 
 # Deploying to Vercel

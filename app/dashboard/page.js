@@ -12,6 +12,18 @@ import FacultyDashboard from './faculty/page';
 import DevDashboard from './dev/page';
 import EditorDashboard from './editor/page';
 
+function FrozenBanner() {
+    return (
+        <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md) var(--space-lg)', marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+            <span style={{ fontSize: '1.2rem' }}>🔒</span>
+            <div>
+                <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--accent-amber)' }}>Dashboard Frozen</span>
+                <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>All actions are temporarily disabled by the administrator. You can still view data.</span>
+            </div>
+        </div>
+    );
+}
+
 export default function DashboardPage() {
     const { user, loading } = useAuth();
     const { settings } = useSettings();
@@ -51,16 +63,7 @@ export default function DashboardPage() {
         );
     }
 
-    // Frozen dashboards show read-only banner for non-DEV users
-    const FrozenBanner = () => settings.dashboardsFrozen && user.role !== ROLES.DEV ? (
-        <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md) var(--space-lg)', marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-            <span style={{ fontSize: '1.2rem' }}>🔒</span>
-            <div>
-                <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--accent-amber)' }}>Dashboard Frozen</span>
-                <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>All actions are temporarily disabled by the administrator. You can still view data.</span>
-            </div>
-        </div>
-    ) : null;
+
 
     const renderDashboard = () => {
         switch (user.role) {

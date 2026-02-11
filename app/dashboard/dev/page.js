@@ -9,18 +9,10 @@ import { MEMBERS, DOMAINS, EVENTS, TASKS, BLOGS, ANNOUNCEMENTS, JOIN_REQUESTS, P
 export default function DevDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
-    const { settings, toggle: toggleSetting, set: setSetting, resetAll } = useSettings();
+    const { settings, toggle: toggleSetting, update: updateSetting, resetAll } = useSettings();
     const [activeTab, setActiveTab] = useState('overview');
 
-    useEffect(() => {
-        if (!loading && user && user.role !== ROLES.DEV) {
-            router.push('/dashboard');
-        }
-    }, [user, loading, router]);
-
-    if (loading || !user || user.role !== ROLES.DEV) return null;
-
-    // Interactive state
+    // Interactive state — must be declared before any early returns (rules-of-hooks)
     const [actionFeedback, setActionFeedback] = useState('');
     const [userActions, setUserActions] = useState({});
     const [domainActions, setDomainActions] = useState({});
@@ -34,6 +26,16 @@ export default function DevDashboard() {
     const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'member', domain: '' });
     const [newDomain, setNewDomain] = useState({ name: '', shortName: '', icon: '🔬', description: '' });
     const [exportProgress, setExportProgress] = useState(null);
+    const [showChangeLeadModal, setShowChangeLeadModal] = useState(null);
+    const [selectedLead, setSelectedLead] = useState('');
+
+    useEffect(() => {
+        if (!loading && user && user.role !== ROLES.DEV) {
+            router.push('/dashboard');
+        }
+    }, [user, loading, router]);
+
+    if (loading || !user || user.role !== ROLES.DEV) return null;
 
     const showFeedback = (msg) => { setActionFeedback(msg); setTimeout(() => setActionFeedback(''), 3000); };
 
@@ -58,9 +60,6 @@ export default function DevDashboard() {
     };
 
     // Domain management
-    const [showChangeLeadModal, setShowChangeLeadModal] = useState(null);
-    const [selectedLead, setSelectedLead] = useState('');
-
     const handleRemoveDomain = (domainId) => {
         setDomainActions(prev => ({ ...prev, [domainId]: 'removed' }));
         showFeedback('Domain removed!');
@@ -337,7 +336,7 @@ export default function DevDashboard() {
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Email *</label>
-                                        <input className="form-input" type="email" required value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} placeholder="user@tattva.ai" />
+                                        <input className="form-input" type="email" required value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} placeholder="user@tattv.ai" />
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">Password *</label>
@@ -724,7 +723,7 @@ export default function DevDashboard() {
                                 <div style={{ height: 6, background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
                                     <div style={{ height: '100%', width: '100%', background: 'var(--gradient-accent)', borderRadius: 'var(--radius-full)' }} />
                                 </div>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', marginTop: 'var(--space-sm)', textAlign: 'center' }}>✅ tattva_backup_{new Date().toISOString().split('T')[0]}.json ready</p>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', marginTop: 'var(--space-sm)', textAlign: 'center' }}>✅ tattv_backup_{new Date().toISOString().split('T')[0]}.json ready</p>
                             </div>
                         )}
 

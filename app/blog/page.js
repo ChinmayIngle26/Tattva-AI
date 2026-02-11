@@ -24,7 +24,7 @@ export default function BlogPage() {
         <div className="container">
           <div className="section-header">
             <span className="section-label">Knowledge Hub</span>
-            <h1>Tattva <span className="text-gradient">Blog</span></h1>
+            <h1>Tattv <span className="text-gradient">Blog</span></h1>
             <p>Technical articles, tutorials, club updates, and industry insights from our community.</p>
           </div>
 
@@ -48,7 +48,7 @@ export default function BlogPage() {
                 <div className="blog-item-header">
                   <span className={`badge ${blog.category === 'Tutorials' ? 'badge-primary' :
                     blog.category === 'Tech News' ? 'badge-purple' :
-                      blog.category === 'Tattva Capital' ? 'badge-accent' : 'badge-primary'
+                      blog.category === 'Tattv Capital' ? 'badge-accent' : 'badge-primary'
                     }`}>
                     {blog.category}
                   </span>

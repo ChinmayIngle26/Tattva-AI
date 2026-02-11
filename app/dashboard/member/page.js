@@ -12,6 +12,11 @@ export default function MemberDashboard() {
     const { settings } = useSettings();
     const [activeTab, setActiveTab] = useState('overview');
 
+    // All useState hooks must be above early returns (rules-of-hooks)
+    const [taskActions, setTaskActions] = useState({});
+    const [eventRegistrations, setEventRegistrations] = useState({});
+    const [actionFeedback, setActionFeedback] = useState('');
+
     useEffect(() => {
         if (!loading && user && user.role !== ROLES.MEMBER) {
             router.push('/dashboard');
@@ -28,11 +33,6 @@ export default function MemberDashboard() {
     const myResources = RESOURCES.filter(r => r.domain === memberData.domain);
     const domainBlogs = BLOGS.filter(b => b.domain === memberData.domain);
     const progress = memberData.totalTasks > 0 ? Math.round((memberData.tasksCompleted / memberData.totalTasks) * 100) : 0;
-
-    // Interactive state
-    const [taskActions, setTaskActions] = useState({});
-    const [eventRegistrations, setEventRegistrations] = useState({});
-    const [actionFeedback, setActionFeedback] = useState('');
 
     const showFeedback = (msg) => { setActionFeedback(msg); setTimeout(() => setActionFeedback(''), 3000); };
 

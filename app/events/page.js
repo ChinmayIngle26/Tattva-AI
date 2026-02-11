@@ -24,7 +24,7 @@ export default function EventsPage() {
                     <div className="section-header">
                         <span className="section-label">Stay Updated</span>
                         <h1>Events & <span className="text-gradient">Workshops</span></h1>
-                        <p>Workshops, hackathons, bootcamps — always something happening at Tattva AI.</p>
+                        <p>Workshops, hackathons, bootcamps — always something happening at Tattv AI.</p>
                     </div>
                     <div className="tabs" style={{ justifyContent: 'center', borderBottom: 'none', marginBottom: 'var(--space-2xl)' }}>
                         {['upcoming', 'past', 'all'].map(f => (

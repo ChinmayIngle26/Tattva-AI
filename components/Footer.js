@@ -8,7 +8,7 @@ export default function Footer() {
                     <div className="footer-brand">
                         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>
                             <span style={{ width: 32, height: 32, background: 'var(--gradient-primary)', borderRadius: 'var(--radius-md)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', color: 'white', fontWeight: 900 }}>T</span>
-                            Tattva <span className="text-gradient">AI</span>
+                            Tattv <span className="text-gradient">AI</span>
                         </Link>
                         <p>A student-driven technical club fostering innovation in AI, Web Development, and Android. Building the next generation of tech leaders.</p>
                         <div className="footer-socials" style={{ marginTop: '1rem' }}>
@@ -51,8 +51,8 @@ export default function Footer() {
                 </div>
 
                 <div className="footer-bottom">
-                    <p>© 2026 Tattva AI. All rights reserved.</p>
-                    <p>Built with 💜 by the Tattva Web Dev Team</p>
+                    <p>© 2026 Tattv AI. All rights reserved.</p>
+                    <p>Built with 💜 by the Tattv Web Dev Team</p>
                 </div>
             </div>
         </footer>

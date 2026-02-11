@@ -1,6 +1,6 @@
-# Tattva AI — Student Technical Club Platform
+# Tattv AI — Student Technical Club Platform
 
-A comprehensive management dashboard and public-facing website for Tattva AI, a student-led technical community.
+A comprehensive management dashboard and public-facing website for Tattv AI, a student-led technical community.
 
 ## Features
 
@@ -38,9 +38,9 @@ A comprehensive management dashboard and public-facing website for Tattva AI, a 
 
 ## Default Credentials (Demo)
 
-- **DEV (Admin)**: `dev@tattva.ai` / `dev123`
-- **Faculty**: `faculty@tattva.ai` / `password`
-- **Lead**: `lead@tattva.ai` / `password`
-- **Mentor**: `mentor@tattva.ai` / `password`
-- **Member**: `member@tattva.ai` / `password`
+- **DEV (Admin)**: `dev@tattv.ai` / `dev123`
+- **Faculty**: `faculty@tattv.ai` / `faculty123`
+- **Lead**: `lead@tattv.ai` / `lead123`
+- **Mentor**: `mentor@tattv.ai` / `mentor123`
+- **Member**: `member@tattv.ai` / `member123`
 

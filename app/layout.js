@@ -6,9 +6,9 @@ import { SettingsProvider } from '@/lib/settings';
 import { ContentProvider } from '@/lib/contentContext';
 
 export const metadata = {
-  title: 'Tattva AI — Student Technical Club',
+  title: 'Tattv AI — Student Technical Club',
   description: 'A student-driven technical club fostering innovation in AI/ML, Web Development, and Android Development. Join us to learn, build, and grow.',
-  keywords: ['Tattva AI', 'Technical Club', 'AI', 'Machine Learning', 'Web Development', 'Android', 'Student Club'],
+  keywords: ['Tattv AI', 'Technical Club', 'AI', 'Machine Learning', 'Web Development', 'Android', 'Student Club'],
 };
 
 export default function RootLayout({ children }) {

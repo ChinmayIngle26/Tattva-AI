@@ -69,7 +69,7 @@ export default function LoginPage() {
                         )}
                         <div className="form-group">
                             <label className="form-label">Email</label>
-                            <input className="form-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@tattva.ai" required />
+                            <input className="form-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@tattv.ai" required />
                         </div>
                         <div className="form-group">
                             <label className="form-label">Password</label>
@@ -93,7 +93,7 @@ export default function LoginPage() {
 
                     <div style={{ textAlign: 'center', marginTop: 'var(--space-lg)' }}>
                         <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>
-                            Demo credentials: <code style={{ color: 'var(--text-secondary)', background: 'var(--bg-glass)', padding: '0.15rem 0.4rem', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem' }}>role@tattva.ai / role123</code>
+                            Demo credentials: <code style={{ color: 'var(--text-secondary)', background: 'var(--bg-glass)', padding: '0.15rem 0.4rem', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem' }}>role@tattv.ai / role123</code>
                         </p>
                     </div>
                 </div>

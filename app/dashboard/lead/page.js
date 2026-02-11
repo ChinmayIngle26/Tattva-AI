@@ -17,6 +17,19 @@ export default function LeadDashboard() {
     } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
+    // All useState hooks must be above early returns (rules-of-hooks)
+    const [joinActions, setJoinActions] = useState({});
+    const [taskModal, setTaskModal] = useState(false);
+    const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium', deadline: '' });
+    const [createdTasks, setCreatedTasks] = useState([]);
+    const [blogModal, setBlogModal] = useState(false);
+    const [newBlog, setNewBlog] = useState({ title: '', excerpt: '', content: '', category: 'Tutorials', readTime: '5 min read', tags: '' });
+    const [announcementModal, setAnnouncementModal] = useState(false);
+    const [newAnnouncement, setNewAnnouncement] = useState({ title: '', message: '', priority: 'normal' });
+    const [createdAnnouncements, setCreatedAnnouncements] = useState([]);
+    const [memberModal, setMemberModal] = useState(null);
+    const [actionFeedback, setActionFeedback] = useState('');
+
     useEffect(() => {
         if (!loading && user && user.role !== ROLES.LEAD) {
             router.push('/dashboard');
@@ -33,21 +46,6 @@ export default function LeadDashboard() {
     const domainProjects = PROJECTS.filter(p => p.domain === user?.domain);
     const allJoins = JOIN_REQUESTS.filter(j => j.domain === user?.domain);
     const pendingJoins = allJoins.filter(j => j.status === 'pending');
-
-    // Local action state
-    const [joinActions, setJoinActions] = useState({});
-    const [taskModal, setTaskModal] = useState(false);
-    const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium', deadline: '' });
-    const [createdTasks, setCreatedTasks] = useState([]);
-
-    const [blogModal, setBlogModal] = useState(false); // Added
-    const [newBlog, setNewBlog] = useState({ title: '', excerpt: '', content: '', category: 'Tutorials', readTime: '5 min read', tags: '' }); // Added
-
-    const [announcementModal, setAnnouncementModal] = useState(false);
-    const [newAnnouncement, setNewAnnouncement] = useState({ title: '', message: '', priority: 'normal' });
-    const [createdAnnouncements, setCreatedAnnouncements] = useState([]);
-    const [memberModal, setMemberModal] = useState(null);
-    const [actionFeedback, setActionFeedback] = useState('');
 
     const showFeedback = (msg) => { setActionFeedback(msg); setTimeout(() => setActionFeedback(''), 3000); };
 
@@ -480,7 +478,7 @@ export default function LeadDashboard() {
                                             <div className="form-group">
                                                 <label className="form-label">Category</label>
                                                 <select className="form-select" value={newBlog.category} onChange={e => setNewBlog({ ...newBlog, category: e.target.value })}>
-                                                    {['Tutorials', 'Tech News', 'Tattva Capital'].map(c => <option key={c} value={c}>{c}</option>)}
+                                                    {['Tutorials', 'Tech News', 'Tattv Capital'].map(c => <option key={c} value={c}>{c}</option>)}
                                                 </select>
                                             </div>
                                             <div className="form-group">

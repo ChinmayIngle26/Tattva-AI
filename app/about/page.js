@@ -11,10 +11,10 @@ const ACHIEVEMENTS = [
 ];
 
 const TIMELINE = [
-    { year: '2024', title: 'Club Founded', desc: 'Tattva AI was established with a vision to democratize tech education on campus.' },
+    { year: '2024', title: 'Club Founded', desc: 'Tattv AI was established with a vision to democratize tech education on campus.' },
     { year: '2024', title: 'First Workshop Series', desc: 'Launched our inaugural "Introduction to AI" workshop series with 40+ participants.' },
     { year: '2025', title: 'Three Domains Established', desc: 'Expanded to cover AI/ML, Web Development, and Android Development domains.' },
-    { year: '2025', title: 'First Hackathon', desc: 'Organized Tattva Hackathon with 50+ participants and 12 competing teams.' },
+    { year: '2025', title: 'First Hackathon', desc: 'Organized Tattv Hackathon with 50+ participants and 12 competing teams.' },
     { year: '2026', title: 'Growing Community', desc: '50+ active members, mentorship programs, and regular industry collaborations.' },
 ];
 
@@ -30,7 +30,7 @@ export default function AboutPage() {
                 <div className="container">
                     <div className="section-header">
                         <span className="section-label">About Us</span>
-                        <h1>The Story of <span className="text-gradient">Tattva AI</span></h1>
+                        <h1>The Story of <span className="text-gradient">Tattv AI</span></h1>
                         <p>From a small group of tech enthusiasts to a thriving community of innovators — here&apos;s our journey.</p>
                     </div>
                 </div>
@@ -123,9 +123,9 @@ export default function AboutPage() {
                 <div className="container">
                     <h2 style={{ marginBottom: 'var(--space-md)' }}>Want to be part of our story?</h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xl)', fontSize: '1.1rem' }}>
-                        Join Tattva AI and help us write the next chapter.
+                        Join Tattv AI and help us write the next chapter.
                     </p>
-                    <Link href="/join" className="btn btn-primary btn-lg">Join Tattva AI →</Link>
+                    <Link href="/join" className="btn btn-primary btn-lg">Join Tattv AI →</Link>
                 </div>
             </section>
 
