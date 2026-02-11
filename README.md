@@ -38,7 +38,7 @@ A comprehensive management dashboard and public-facing website for Tattv AI, a s
 
 ## Default Credentials (Demo)
 
-- **DEV (Admin)**: `dev@tattv.ai` / `dev123`
+
 - **Faculty**: `faculty@tattv.ai` / `faculty123`
 - **Lead**: `lead@tattv.ai` / `lead123`
 - **Mentor**: `mentor@tattv.ai` / `mentor123`
