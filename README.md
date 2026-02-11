@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tattv AI — Student Technical Club Platform
+
+A comprehensive management dashboard and public-facing website for Tattv AI, a student-led technical community.
+
+## Features
+
+- **Public Website**: Modern, responsive landing page, blog, events, and about sections.
+- **Role-Based Dashboards**: Tailored experiences for:
+  - **Members**: Track tasks, join events, view leaderboard.
+  - **Mentors**: Review tasks, guide members.
+  - **Domain Leads**: Manage members, projects, and domain activities.
+  - **Faculty**: High-level oversight and reporting.
+  - **DEV (Admin)**: Full system control, feature flags, backups, and user management.
+- **System Features**:
+  - **Role-Based Access Control (RBAC)**: secure routing and data visibility.
+  - **Feature Flags**: Toggle features (e.g., Leaderboard, AI) in real-time.
+  - **Mock Backend**: Client-side data simulation with `localStorage` persistence for prototyping.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Vanilla CSS (Global + CSS Modules/JSX Styles)
+- **State Management**: React Context (`AuthContext`, `SettingsContext`)
 
 ## Getting Started
 
-First, run the development server:
+1.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3.  **Open in browser**: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Default Credentials (Demo)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **DEV (Admin)**: `dev@tattv.ai` / `dev123`
+- **Faculty**: `faculty@tattv.ai` / `faculty123`
+- **Lead**: `lead@tattv.ai` / `lead123`
+- **Mentor**: `mentor@tattv.ai` / `mentor123`
+- **Member**: `member@tattv.ai` / `member123`
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
