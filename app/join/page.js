@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { DOMAINS } from '@/lib/data';
 import { useSettings } from '@/lib/settings';
+import { useContent } from '@/lib/contentContext';
 
 export default function JoinPage() {
     const [form, setForm] = useState({ name: '', email: '', branch: '', year: '', domain: '', motivation: '' });
     const [submitted, setSubmitted] = useState(false);
     const { settings } = useSettings();
+    const { addJoinRequest } = useContent();
 
     const isDisabled = !settings.registrationsEnabled || !settings.joinRequestsEnabled;
 
@@ -31,6 +33,7 @@ export default function JoinPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        addJoinRequest(form);
         setSubmitted(true);
     };
 
@@ -79,7 +82,7 @@ export default function JoinPage() {
                                 <label className="form-label">Branch *</label>
                                 <select className="form-select" required value={form.branch} onChange={e => setForm({ ...form, branch: e.target.value })}>
                                     <option value="">Select branch</option>
-                                    <option>CSE</option><option>IT</option><option>ECE</option><option>EEE</option><option>MECH</option><option>Other</option>
+                                    <option>CSE</option><option>AIML</option><option>IT</option><option>ECE</option><option>EEE</option><option>MECH</option><option>Other</option>
                                 </select>
                             </div>
                             <div className="form-group">

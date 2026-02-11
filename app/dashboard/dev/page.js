@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
-import { MEMBERS, DOMAINS, EVENTS, TASKS, BLOGS, ANNOUNCEMENTS, JOIN_REQUESTS, PROJECTS, DEMO_USERS, ROLES, ROLE_LABELS } from '@/lib/data';
+import { MEMBERS, DOMAINS, EVENTS, TASKS, BLOGS, ANNOUNCEMENTS, PROJECTS, DEMO_USERS, ROLES, ROLE_LABELS } from '@/lib/data';
 
 export default function DevDashboard() {
     const { user, loading } = useAuth();
