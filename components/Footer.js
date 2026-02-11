@@ -13,7 +13,7 @@ export default function Footer() {
                         <p>A student-driven technical club fostering innovation in AI, Web Development, and Android. Building the next generation of tech leaders.</p>
                         <div className="footer-socials" style={{ marginTop: '1rem' }}>
                             <a href="#" aria-label="GitHub">⌨</a>
-                            <a href="#" aria-label="LinkedIn">🔗</a>
+                            <a href="https://www.linkedin.com/in/tattv-ai-club-776a163a3" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">🔗</a>
                             <a href="#" aria-label="Twitter">✕</a>
                             <a href="#" aria-label="Instagram">📷</a>
                         </div>
