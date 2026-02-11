@@ -48,7 +48,7 @@ export default function Navbar() {
                 <div className="navbar-inner">
                     <Link href="/" className="navbar-logo">
                         <span className="logo-icon">T</span>
-                        <span>Tattv <span className="text-gradient">AI</span></span>
+                        <span>Tattv<span className="text-gradient">.AI</span></span>
                     </Link>
 
                     <div className="navbar-links">
