@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
 import { useContent } from '@/lib/contentContext';
-import { MEMBERS, TASKS, EVENTS, JOIN_REQUESTS, PROJECTS, DOMAINS, RESOURCES, ROLES } from '@/lib/data';
+import { MEMBERS, TASKS, EVENTS, PROJECTS, DOMAINS, RESOURCES, ROLES } from '@/lib/data';
 
 export default function LeadDashboard() {
     const { user, loading } = useAuth();
@@ -13,12 +13,13 @@ export default function LeadDashboard() {
     const { settings } = useSettings();
     const {
         blogs, addBlog, updateBlog,
-        announcements, addAnnouncement, updateAnnouncement
+        announcements, addAnnouncement, updateAnnouncement,
+        joinRequests, updateJoinRequest
     } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     // All useState hooks must be above early returns (rules-of-hooks)
-    const [joinActions, setJoinActions] = useState({});
+
     const [taskModal, setTaskModal] = useState(false);
     const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium', deadline: '' });
     const [createdTasks, setCreatedTasks] = useState([]);
@@ -44,7 +45,7 @@ export default function LeadDashboard() {
     const domainEvents = EVENTS.filter(e => e.domain === user?.domain || e.domain === null);
     const domainAnnouncements = announcements.filter(a => a.domain === user?.domain || a.type === 'global');
     const domainProjects = PROJECTS.filter(p => p.domain === user?.domain);
-    const allJoins = JOIN_REQUESTS.filter(j => j.domain === user?.domain);
+    const allJoins = joinRequests.filter(j => j.domain === user?.domain);
     const pendingJoins = allJoins.filter(j => j.status === 'pending');
 
     const showFeedback = (msg) => { setActionFeedback(msg); setTimeout(() => setActionFeedback(''), 3000); };
@@ -68,7 +69,7 @@ export default function LeadDashboard() {
     };
 
     const handleJoinAction = (id, action) => {
-        setJoinActions(prev => ({ ...prev, [id]: action }));
+        updateJoinRequest(id, { status: action });
         showFeedback(`Join request ${action === 'approved' ? 'approved' : 'rejected'} successfully!`);
     };
 
@@ -133,8 +134,8 @@ export default function LeadDashboard() {
                                 { overview: '📊', approvals: '⚖️', members: '👥', tasks: '✅', 'join requests': '📩', blogs: '📝', events: '📅', announcements: '📢', projects: '🚀' }[tab]
                             }</span>
                             {tab}
-                            {tab === 'join requests' && pendingJoins.filter(j => !joinActions[j.id]).length > 0 && (
-                                <span style={{ marginLeft: 'auto', background: 'var(--accent-red)', color: '#fff', borderRadius: 'var(--radius-full)', padding: '0.1rem 0.5rem', fontSize: '0.7rem', fontWeight: 700 }}>{pendingJoins.filter(j => !joinActions[j.id]).length}</span>
+                            {tab === 'join requests' && pendingJoins.length > 0 && (
+                                <span style={{ marginLeft: 'auto', background: 'var(--accent-red)', color: '#fff', borderRadius: 'var(--radius-full)', padding: '0.1rem 0.5rem', fontSize: '0.7rem', fontWeight: 700 }}>{pendingJoins.length}</span>
                             )}
                             {tab === 'approvals' && (pendingBlogs.length + pendingAnnouncements.length) > 0 && (
                                 <span style={{ marginLeft: 'auto', background: 'var(--accent-amber)', color: '#fff', borderRadius: 'var(--radius-full)', padding: '0.1rem 0.5rem', fontSize: '0.7rem', fontWeight: 700 }}>{pendingBlogs.length + pendingAnnouncements.length}</span>
@@ -156,13 +157,13 @@ export default function LeadDashboard() {
                         <div className="stat-grid">
                             <div className="stat-card"><div className="stat-icon">👥</div><div className="stat-value">{domainMembers.length}</div><div className="stat-label">Members</div></div>
                             <div className="stat-card"><div className="stat-icon">⚖️</div><div className="stat-value" style={{ color: (pendingBlogs.length + pendingAnnouncements.length) > 0 ? 'var(--accent-amber)' : undefined }}>{pendingBlogs.length + pendingAnnouncements.length}</div><div className="stat-label">Pending Approvals</div></div>
-                            <div className="stat-card"><div className="stat-icon">📩</div><div className="stat-value" style={{ color: pendingJoins.filter(j => !joinActions[j.id]).length > 0 ? 'var(--accent-amber)' : undefined }}>{pendingJoins.filter(j => !joinActions[j.id]).length}</div><div className="stat-label">Pending Joins</div></div>
+                            <div className="stat-card"><div className="stat-icon">📩</div><div className="stat-value" style={{ color: pendingJoins.length > 0 ? 'var(--accent-amber)' : undefined }}>{pendingJoins.length}</div><div className="stat-label">Pending Joins</div></div>
                             <div className="stat-card"><div className="stat-icon">🚀</div><div className="stat-value">{domainProjects.length}</div><div className="stat-label">Projects</div></div>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-xl)' }}>
                             <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
                                 <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-md)' }}>📩 Pending Join Requests</h3>
-                                {pendingJoins.filter(j => !joinActions[j.id]).length === 0 ? <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem' }}>No pending requests ✨</p> : pendingJoins.filter(j => !joinActions[j.id]).map(j => (
+                                {pendingJoins.length === 0 ? <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem' }}>No pending requests ✨</p> : pendingJoins.map(j => (
                                     <div key={j.id} style={{ padding: 'var(--space-md)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-sm)' }}>
                                         <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{j.name}</div>
                                         <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>{j.branch} • {j.year}</div>
@@ -387,40 +388,37 @@ export default function LeadDashboard() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
                             <h3 style={{ fontSize: '1rem' }}>📩 Join Requests</h3>
                             <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                                <span className="badge badge-amber">{allJoins.filter(j => !joinActions[j.id] && j.status === 'pending').length} pending</span>
-                                <span className="badge badge-accent">{Object.values(joinActions).filter(a => a === 'approved').length} approved</span>
-                                <span className="badge badge-pink">{Object.values(joinActions).filter(a => a === 'rejected').length} rejected</span>
+                                <span className="badge badge-amber">{allJoins.filter(j => j.status === 'pending').length} pending</span>
+                                <span className="badge badge-accent">{allJoins.filter(j => j.status === 'approved').length} approved</span>
+                                <span className="badge badge-pink">{allJoins.filter(j => j.status === 'rejected').length} rejected</span>
                             </div>
                         </div>
-                        {allJoins.map(j => {
-                            const action = joinActions[j.id];
-                            return (
-                                <div key={j.id} style={{ padding: 'var(--space-lg)', background: 'var(--bg-glass)', border: `1px solid ${action === 'approved' ? 'rgba(6,214,160,0.3)' : action === 'rejected' ? 'rgba(239,68,68,0.3)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-md)', opacity: action ? 0.7 : 1, transition: 'all 0.3s ease' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <div>
-                                            <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: 2 }}>{j.name}</div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>{j.email}</div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: 'var(--space-xs)' }}>{j.branch} • {j.year} • Applied {j.date}</div>
-                                        </div>
-                                        {action ? (
-                                            <span className={`badge ${action === 'approved' ? 'badge-accent' : 'badge-pink'}`} style={{ textTransform: 'capitalize' }}>{action}</span>
-                                        ) : (
-                                            <span className="badge badge-amber">Pending</span>
-                                        )}
+                        {allJoins.map(j => (
+                            <div key={j.id} style={{ padding: 'var(--space-lg)', background: 'var(--bg-glass)', border: `1px solid ${j.status === 'approved' ? 'rgba(6,214,160,0.3)' : j.status === 'rejected' ? 'rgba(239,68,68,0.3)' : 'var(--border-color)'}`, borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-md)', opacity: j.status !== 'pending' ? 0.7 : 1, transition: 'all 0.3s ease' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div>
+                                        <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: 2 }}>{j.name}</div>
+                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>{j.email}</div>
+                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: 'var(--space-xs)' }}>{j.branch} • {j.year} • Applied {j.date}</div>
                                     </div>
-                                    <div style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginBottom: 'var(--space-xs)' }}>Motivation:</div>
-                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{j.motivation}</p>
-                                    </div>
-                                    {!action && (
-                                        <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-md)' }}>
-                                            <button className="btn btn-primary btn-sm" onClick={() => handleJoinAction(j.id, 'approved')}>✓ Approve</button>
-                                            <button className="btn btn-secondary btn-sm" onClick={() => handleJoinAction(j.id, 'rejected')}>✗ Reject</button>
-                                        </div>
+                                    {j.status !== 'pending' ? (
+                                        <span className={`badge ${j.status === 'approved' ? 'badge-accent' : 'badge-pink'}`} style={{ textTransform: 'capitalize' }}>{j.status}</span>
+                                    ) : (
+                                        <span className="badge badge-amber">Pending</span>
                                     )}
                                 </div>
-                            );
-                        })}
+                                <div style={{ marginTop: 'var(--space-md)', padding: 'var(--space-md)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginBottom: 'var(--space-xs)' }}>Motivation:</div>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{j.motivation}</p>
+                                </div>
+                                {j.status === 'pending' && (
+                                    <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-md)' }}>
+                                        <button className="btn btn-primary btn-sm" onClick={() => handleJoinAction(j.id, 'approved')}>✓ Approve</button>
+                                        <button className="btn btn-secondary btn-sm" onClick={() => handleJoinAction(j.id, 'rejected')}>✗ Reject</button>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 )}
 

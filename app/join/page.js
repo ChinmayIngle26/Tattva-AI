@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { DOMAINS } from '@/lib/data';
 import { useSettings } from '@/lib/settings';
+import { useContent } from '@/lib/contentContext';
 
 export default function JoinPage() {
     const [form, setForm] = useState({ name: '', email: '', branch: '', year: '', domain: '', motivation: '' });
     const [submitted, setSubmitted] = useState(false);
     const { settings } = useSettings();
+    const { addJoinRequest } = useContent();
 
     const isDisabled = !settings.registrationsEnabled || !settings.joinRequestsEnabled;
 
@@ -31,6 +33,7 @@ export default function JoinPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        addJoinRequest(form);
         setSubmitted(true);
     };
 
