@@ -11,13 +11,15 @@ export default function MemberDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { settings } = useSettings();
-    const { members } = useContent();
+    const { members, updateMember } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     // All useState hooks must be above early returns (rules-of-hooks)
     const [taskActions, setTaskActions] = useState({});
     const [eventRegistrations, setEventRegistrations] = useState({});
     const [actionFeedback, setActionFeedback] = useState('');
+    const [editingProfile, setEditingProfile] = useState(false);
+    const [profileForm, setProfileForm] = useState({});
 
     useEffect(() => {
         if (!loading && user && user.role !== ROLES.MEMBER) {
@@ -49,7 +51,32 @@ export default function MemberDashboard() {
         showFeedback(eventRegistrations[eventId] ? 'Registration cancelled' : 'Registered for event!');
     };
 
-    const tabs = ['overview', 'my tasks', 'announcements', 'events', 'resources', 'progress'];
+    const startEditingProfile = () => {
+        setProfileForm({
+            bio: memberData.bio || '',
+            github: memberData.github || '',
+            linkedin: memberData.linkedin || '',
+            portfolio: memberData.portfolio || '',
+            phone: memberData.phone || '',
+            skills: (memberData.skills || []).join(', '),
+        });
+        setEditingProfile(true);
+    };
+
+    const saveProfile = () => {
+        updateMember(memberData.id, {
+            bio: profileForm.bio,
+            github: profileForm.github,
+            linkedin: profileForm.linkedin,
+            portfolio: profileForm.portfolio,
+            phone: profileForm.phone,
+            skills: profileForm.skills.split(',').map(s => s.trim()).filter(Boolean),
+        });
+        setEditingProfile(false);
+        showFeedback('Profile updated successfully!');
+    };
+
+    const tabs = ['overview', 'profile', 'my tasks', 'announcements', 'events', 'resources', 'progress'];
 
     return (
         <div className="dashboard-layout">
@@ -73,7 +100,7 @@ export default function MemberDashboard() {
                     {tabs.map(tab => (
                         <div key={tab} className={`sidebar-link ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)} style={{ cursor: 'pointer', textTransform: 'capitalize' }}>
                             <span className="link-icon">{
-                                { overview: '📊', 'my tasks': '✅', announcements: '📢', events: '📅', resources: '📚', progress: '📈' }[tab]
+                                { overview: '📊', profile: '👤', 'my tasks': '✅', announcements: '📢', events: '📅', resources: '📚', progress: '📈' }[tab]
                             }</span>
                             {tab}
                         </div>
@@ -131,6 +158,146 @@ export default function MemberDashboard() {
                             </div>
                         </div>
                     </>
+                )}
+
+                {/* ========== PROFILE ========== */}
+                {activeTab === 'profile' && (
+                    <div>
+                        <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-xl)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-xl)' }}>
+                                <div style={{ display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
+                                    <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+                                        {memberData.name?.charAt(0) || 'M'}
+                                    </div>
+                                    <div>
+                                        <h2 style={{ fontSize: '1.3rem', marginBottom: 'var(--space-xs)' }}>{memberData.name}</h2>
+                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>{memberData.email}</div>
+                                        <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
+                                            <span className="badge badge-primary">{memberData.branch}</span>
+                                            <span className="badge badge-accent">{memberData.year}</span>
+                                            <span style={{ fontSize: '0.8rem', color: domain?.color }}>{domain?.icon} {domain?.name}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {!editingProfile ? (
+                                    <button className="btn btn-primary btn-sm" onClick={startEditingProfile} disabled={settings.dashboardsFrozen}>
+                                        ✏️ Edit Profile
+                                    </button>
+                                ) : (
+                                    <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                                        <button className="btn btn-primary btn-sm" onClick={saveProfile}>💾 Save</button>
+                                        <button className="btn btn-secondary btn-sm" onClick={() => setEditingProfile(false)}>Cancel</button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {editingProfile ? (
+                                <div style={{ display: 'grid', gap: 'var(--space-lg)' }}>
+                                    <div className="form-group">
+                                        <label className="form-label">Bio</label>
+                                        <textarea className="form-input" rows={3} placeholder="Tell us about yourself..." value={profileForm.bio} onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })} style={{ resize: 'vertical' }} />
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">GitHub Profile</label>
+                                            <input className="form-input" placeholder="https://github.com/username" value={profileForm.github} onChange={e => setProfileForm({ ...profileForm, github: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">LinkedIn Profile</label>
+                                            <input className="form-input" placeholder="https://linkedin.com/in/username" value={profileForm.linkedin} onChange={e => setProfileForm({ ...profileForm, linkedin: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
+                                        <div className="form-group">
+                                            <label className="form-label">Portfolio / Website</label>
+                                            <input className="form-input" placeholder="https://yoursite.com" value={profileForm.portfolio} onChange={e => setProfileForm({ ...profileForm, portfolio: e.target.value })} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Phone</label>
+                                            <input className="form-input" placeholder="+91 XXXXX XXXXX" value={profileForm.phone} onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Skills (comma separated)</label>
+                                        <input className="form-input" placeholder="React, Python, Machine Learning, Node.js" value={profileForm.skills} onChange={e => setProfileForm({ ...profileForm, skills: e.target.value })} />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    {memberData.bio && (
+                                        <div style={{ marginBottom: 'var(--space-xl)', padding: 'var(--space-lg)', background: 'var(--bg-glass)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+                                            <h4 style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 'var(--space-sm)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>About</h4>
+                                            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{memberData.bio}</p>
+                                        </div>
+                                    )}
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+                                        {memberData.github && (
+                                            <a href={memberData.github} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-md) var(--space-lg)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)', fontSize: '0.9rem', transition: 'all 0.2s ease' }}>
+                                                ⌨ GitHub
+                                                <span style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem', marginLeft: 'auto' }}>→</span>
+                                            </a>
+                                        )}
+                                        {memberData.linkedin && (
+                                            <a href={memberData.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-md) var(--space-lg)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)', fontSize: '0.9rem', transition: 'all 0.2s ease' }}>
+                                                🔗 LinkedIn
+                                                <span style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem', marginLeft: 'auto' }}>→</span>
+                                            </a>
+                                        )}
+                                        {memberData.portfolio && (
+                                            <a href={memberData.portfolio} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-md) var(--space-lg)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'var(--text-primary)', fontSize: '0.9rem', transition: 'all 0.2s ease' }}>
+                                                🌐 Portfolio
+                                                <span style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem', marginLeft: 'auto' }}>→</span>
+                                            </a>
+                                        )}
+                                        {memberData.phone && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-md) var(--space-lg)', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', fontSize: '0.9rem' }}>
+                                                📱 {memberData.phone}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {memberData.skills && memberData.skills.length > 0 && (
+                                        <div style={{ marginBottom: 'var(--space-xl)' }}>
+                                            <h4 style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 'var(--space-md)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Skills</h4>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+                                                {memberData.skills.map((skill, i) => (
+                                                    <span key={i} style={{ padding: 'var(--space-xs) var(--space-md)', background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 'var(--radius-full)', fontSize: '0.8rem', color: 'var(--accent-purple)', fontWeight: 500 }}>
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {!memberData.bio && !memberData.github && !memberData.linkedin && !memberData.skills?.length && (
+                                        <div style={{ textAlign: 'center', padding: 'var(--space-2xl) var(--space-xl)', color: 'var(--text-tertiary)' }}>
+                                            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-md)' }}>👤</div>
+                                            <p style={{ fontSize: '0.95rem', marginBottom: 'var(--space-lg)' }}>Your profile is empty. Add your info to stand out!</p>
+                                            <button className="btn btn-primary" onClick={startEditingProfile} disabled={settings.dashboardsFrozen}>
+                                                ✏️ Set Up Profile
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-lg)' }}>
+                            <div className="glass-card" style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{memberData.tasksCompleted}</div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginTop: 'var(--space-xs)' }}>Tasks Completed</div>
+                            </div>
+                            <div className="glass-card" style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-400)' }}>{progress}%</div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginTop: 'var(--space-xs)' }}>Progress</div>
+                            </div>
+                            <div className="glass-card" style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-purple)' }}>{memberData.joinedAt}</div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginTop: 'var(--space-xs)' }}>Joined</div>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* ========== MY TASKS ========== */}
