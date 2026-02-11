@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
-import { MEMBERS, TASKS, RESOURCES, DOMAINS, ANNOUNCEMENTS, EVENTS, ROLES } from '@/lib/data';
+import { TASKS, RESOURCES, DOMAINS, ANNOUNCEMENTS, EVENTS, ROLES } from '@/lib/data';
+import { useContent } from '@/lib/contentContext';
 
 export default function MentorDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { settings } = useSettings();
+    const { members } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     // All useState hooks must be above early returns (rules-of-hooks)
@@ -33,7 +35,7 @@ export default function MentorDashboard() {
 
     if (loading || !user || user.role !== ROLES.MENTOR) return null;
     const domain = DOMAINS.find(d => d.id === user?.domain);
-    const domainMembers = MEMBERS.filter(m => m.domain === user?.domain);
+    const domainMembers = members.filter(m => m.domain === user?.domain);
     const domainTasks = TASKS.filter(t => t.domain === user?.domain);
     const domainResources = RESOURCES.filter(r => r.domain === user?.domain);
     const domainAnnouncements = ANNOUNCEMENTS.filter(a => a.type === 'global' || a.domain === user?.domain);
@@ -152,7 +154,7 @@ export default function MentorDashboard() {
                                 {pendingSubmissions.filter(s => !reviewActions[`${s.taskId}-${s.memberId}`]).length === 0 ? (
                                     <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem' }}>No pending reviews 🎉</p>
                                 ) : pendingSubmissions.filter(s => !reviewActions[`${s.taskId}-${s.memberId}`]).slice(0, 3).map((s, i) => {
-                                    const member = MEMBERS.find(m => m.id === s.memberId);
+                                    const member = members.find(m => m.id === s.memberId);
                                     return (
                                         <div key={i} style={{ padding: 'var(--space-md)', background: 'var(--bg-glass)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', borderLeft: '3px solid var(--accent-amber)', marginBottom: 'var(--space-sm)' }}>
                                             <span style={{ fontWeight: 600, fontSize: '0.9rem', display: 'block' }}>{s.taskTitle}</span>
@@ -169,7 +171,7 @@ export default function MentorDashboard() {
                     </>
                 )}
 
-                {/* ========== MY MEMBERS ========== */}
+                {/* ========== MY members ========== */}
                 {activeTab === 'my members' && (
                     <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
                         <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-lg)' }}>👥 Assigned Members ({domainMembers.length})</h3>
@@ -299,7 +301,7 @@ export default function MentorDashboard() {
                         ) : allSubmissions.map((s, i) => {
                             const key = `${s.taskId}-${s.memberId}`;
                             const action = reviewActions[key];
-                            const member = MEMBERS.find(m => m.id === s.memberId);
+                            const member = members.find(m => m.id === s.memberId);
                             return (
                                 <div key={i} style={{ padding: 'var(--space-lg)', background: 'var(--bg-glass)', borderRadius: 'var(--radius-md)', border: `1px solid ${action === 'approved' ? 'rgba(6,214,160,0.3)' : action === 'feedback' ? 'rgba(139,92,246,0.3)' : 'var(--border-color)'}`, borderLeft: `3px solid ${action === 'approved' ? 'var(--accent-cyan)' : action === 'feedback' ? 'var(--accent-purple)' : 'var(--accent-amber)'}`, marginBottom: 'var(--space-md)', opacity: action ? 0.7 : 1, transition: 'all 0.3s ease' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

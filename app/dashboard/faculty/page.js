@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
-import { MEMBERS, DOMAINS, EVENTS, ANNOUNCEMENTS, TASKS, BLOGS, PROJECTS, ROLES } from '@/lib/data';
+import { DOMAINS, EVENTS, ANNOUNCEMENTS, TASKS, BLOGS, PROJECTS, ROLES } from '@/lib/data';
+import { useContent } from '@/lib/contentContext';
 
 export default function FacultyDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { settings } = useSettings();
+    const { members } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     useEffect(() => {
@@ -19,7 +21,7 @@ export default function FacultyDashboard() {
     }, [user, loading, router]);
 
     if (loading || !user || user.role !== ROLES.FACULTY) return null;
-    const totalMembers = MEMBERS.length;
+    const totalMembers = members.length;
     const totalTasks = TASKS.length;
     const completedTasks = TASKS.filter(t => t.status === 'completed').length;
     const upcomingEvents = EVENTS.filter(e => e.status === 'upcoming');
@@ -74,7 +76,7 @@ export default function FacultyDashboard() {
                             <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-md)' }}>🏛️ Domain Overview</h3>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-md)' }}>
                                 {DOMAINS.map(d => {
-                                    const count = MEMBERS.filter(m => m.domain === d.id).length;
+                                    const count = members.filter(m => m.domain === d.id).length;
                                     const domTasks = TASKS.filter(t => t.domain === d.id);
                                     const domCompleted = domTasks.filter(t => t.status === 'completed').length;
                                     return (
@@ -122,7 +124,7 @@ export default function FacultyDashboard() {
                     <div>
                         <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-lg)' }}>🏛️ All Domains ({DOMAINS.length})</h3>
                         {DOMAINS.map(d => {
-                            const domMembers = MEMBERS.filter(m => m.domain === d.id);
+                            const domMembers = members.filter(m => m.domain === d.id);
                             const domTasks = TASKS.filter(t => t.domain === d.id);
                             const domCompleted = domTasks.filter(t => t.status === 'completed').length;
                             const domProjects = PROJECTS.filter(p => p.domain === d.id);
@@ -160,14 +162,14 @@ export default function FacultyDashboard() {
                     </div>
                 )}
 
-                {/* ========== MEMBERS ========== */}
+                {/* ========== members ========== */}
                 {activeTab === 'members' && (
                     <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
                         <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-lg)' }}>👥 All Members ({totalMembers})</h3>
                         <table className="data-table">
                             <thead><tr><th>Name</th><th>Domain</th><th>Year</th><th>Branch</th><th>Tasks</th><th>Progress</th></tr></thead>
                             <tbody>
-                                {MEMBERS.map(m => {
+                                {members.map(m => {
                                     const d = DOMAINS.find(dm => dm.id === m.domain);
                                     const mp = m.totalTasks > 0 ? Math.round((m.tasksCompleted / m.totalTasks) * 100) : 0;
                                     return (
@@ -283,7 +285,7 @@ export default function FacultyDashboard() {
                         <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-xl)' }}>
                             <h4 style={{ fontSize: '0.95rem', marginBottom: 'var(--space-lg)' }}>🏛️ Domain Performance</h4>
                             {DOMAINS.map(d => {
-                                const domMembers = MEMBERS.filter(m => m.domain === d.id);
+                                const domMembers = members.filter(m => m.domain === d.id);
                                 const domTasks = TASKS.filter(t => t.domain === d.id);
                                 const domCompleted = domTasks.filter(t => t.status === 'completed').length;
                                 const taskRate = domTasks.length > 0 ? Math.round((domCompleted / domTasks.length) * 100) : 0;
@@ -314,7 +316,7 @@ export default function FacultyDashboard() {
                             <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
                                 <h4 style={{ fontSize: '0.95rem', marginBottom: 'var(--space-lg)' }}>👥 Members per Domain</h4>
                                 {DOMAINS.map(d => {
-                                    const count = MEMBERS.filter(m => m.domain === d.id).length;
+                                    const count = members.filter(m => m.domain === d.id).length;
                                     return (
                                         <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--space-sm) 0' }}>
                                             <span style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>{d.icon} {d.shortName}</span>

@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
-import { MEMBERS, DOMAINS, EVENTS, TASKS, BLOGS, ANNOUNCEMENTS, PROJECTS, DEMO_USERS, ROLES, ROLE_LABELS } from '@/lib/data';
+import { DOMAINS, EVENTS, TASKS, BLOGS, ANNOUNCEMENTS, PROJECTS, DEMO_USERS, ROLES, ROLE_LABELS } from '@/lib/data';
+import { useContent } from '@/lib/contentContext';
 
 export default function DevDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { settings, toggle: toggleSetting, update: updateSetting, resetAll } = useSettings();
+    const { members } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     // Interactive state — must be declared before any early returns (rules-of-hooks)
@@ -75,7 +77,7 @@ export default function DevDashboard() {
 
     const confirmChangeLead = () => {
         if (!selectedLead) return;
-        const newLeadUser = DEMO_USERS.find(u => u.email === selectedLead) || MEMBERS.find(m => m.email === selectedLead);
+        const newLeadUser = DEMO_USERS.find(u => u.email === selectedLead) || members.find(m => m.email === selectedLead);
         setDomainActions(prev => ({
             ...prev,
             [showChangeLeadModal.id + '_lead']: newLeadUser
@@ -204,7 +206,7 @@ export default function DevDashboard() {
                 {activeTab === 'overview' && (
                     <>
                         <div className="stat-grid">
-                            <div className="stat-card" style={{ borderTop: '3px solid var(--primary-500)' }}><div className="stat-icon">👥</div><div className="stat-value">{MEMBERS.length}</div><div className="stat-label">Total Members</div></div>
+                            <div className="stat-card" style={{ borderTop: '3px solid var(--primary-500)' }}><div className="stat-icon">👥</div><div className="stat-value">{members.length}</div><div className="stat-label">Total Members</div></div>
                             <div className="stat-card" style={{ borderTop: '3px solid var(--accent-purple)' }}><div className="stat-icon">🏛️</div><div className="stat-value">{DOMAINS.length}</div><div className="stat-label">Domains</div></div>
                             <div className="stat-card" style={{ borderTop: '3px solid var(--accent-cyan)' }}><div className="stat-icon">📋</div><div className="stat-value">{TASKS.length}</div><div className="stat-label">Total Tasks</div></div>
                             <div className="stat-card" style={{ borderTop: '3px solid var(--accent-amber)' }}><div className="stat-icon">📝</div><div className="stat-value">{BLOGS.length}</div><div className="stat-label">Blog Posts</div></div>
@@ -215,8 +217,8 @@ export default function DevDashboard() {
                             <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
                                 <h3 style={{ fontSize: '1rem', marginBottom: 'var(--space-md)' }}>🏛️ Domain Distribution</h3>
                                 {DOMAINS.map(d => {
-                                    const count = MEMBERS.filter(m => m.domain === d.id).length;
-                                    const pct = MEMBERS.length > 0 ? Math.round((count / MEMBERS.length) * 100) : 0;
+                                    const count = members.filter(m => m.domain === d.id).length;
+                                    const pct = members.length > 0 ? Math.round((count / members.length) * 100) : 0;
                                     return (
                                         <div key={d.id} style={{ marginBottom: 'var(--space-md)' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: 4 }}>
@@ -420,7 +422,7 @@ export default function DevDashboard() {
                                         </div>
                                         <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                                             <div>Lead: <strong>{currentLead.name}</strong></div>
-                                            <div>{MEMBERS.filter(m => m.domain === d.id).length} members</div>
+                                            <div>{members.filter(m => m.domain === d.id).length} members</div>
                                             <div>{d.mentors.length} mentors</div>
                                         </div>
                                         <div style={{ display: 'flex', gap: 'var(--space-xs)', marginTop: 'var(--space-md)' }}>
@@ -453,7 +455,7 @@ export default function DevDashboard() {
                                         <label className="form-label">New Lead</label>
                                         <select className="form-select" value={selectedLead} onChange={e => setSelectedLead(e.target.value)}>
                                             <option value="">Select a user...</option>
-                                            {[...DEMO_USERS, ...MEMBERS].filter(u =>
+                                            {[...DEMO_USERS, ...members].filter(u =>
                                                 u.role !== ROLES.DEV &&
                                                 (u.role === ROLES.LEAD || u.role === ROLES.MENTOR || u.role === ROLES.FACULTY) &&
                                                 u.email !== (domainActions[showChangeLeadModal.id + '_lead']?.email || showChangeLeadModal.lead.email)
@@ -588,7 +590,7 @@ export default function DevDashboard() {
                 {activeTab === 'analytics' && (
                     <div>
                         <div className="stat-grid">
-                            <div className="stat-card" style={{ borderTop: '3px solid var(--primary-500)' }}><div className="stat-icon">👥</div><div className="stat-value">{MEMBERS.length}</div><div className="stat-label">Total Members</div></div>
+                            <div className="stat-card" style={{ borderTop: '3px solid var(--primary-500)' }}><div className="stat-icon">👥</div><div className="stat-value">{members.length}</div><div className="stat-label">Total Members</div></div>
                             <div className="stat-card" style={{ borderTop: '3px solid var(--accent-cyan)' }}><div className="stat-icon">✅</div><div className="stat-value">{TASKS.filter(t => t.status === 'completed').length}/{TASKS.length}</div><div className="stat-label">Task Completion</div></div>
                             <div className="stat-card" style={{ borderTop: '3px solid var(--accent-purple)' }}><div className="stat-icon">📅</div><div className="stat-value">{EVENTS.reduce((a, e) => a + e.registeredCount, 0)}</div><div className="stat-label">Event Registrations</div></div>
                             <div className="stat-card" style={{ borderTop: '3px solid var(--accent-pink)' }}><div className="stat-icon">📝</div><div className="stat-value">{BLOGS.length}</div><div className="stat-label">Published Blogs</div></div>
@@ -606,7 +608,7 @@ export default function DevDashboard() {
                                             <span style={{ color: d.color, fontWeight: 600 }}>{rate}% completion</span>
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-md)', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                            <div>{MEMBERS.filter(m => m.domain === d.id).length} members</div>
+                                            <div>{members.filter(m => m.domain === d.id).length} members</div>
                                             <div>{dTasks.length} tasks</div>
                                             <div>{BLOGS.filter(b => b.domain === d.id).length} blogs</div>
                                             <div>{PROJECTS.filter(p => p.domain === d.id).length} projects</div>
@@ -707,7 +709,7 @@ export default function DevDashboard() {
                                 <h4 style={{ fontSize: '0.95rem', marginBottom: 'var(--space-md)' }}>📦 Export Complete</h4>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
                                     {[
-                                        ['Members', MEMBERS.length],
+                                        ['Members', members.length],
                                         ['Tasks', TASKS.length],
                                         ['Blogs', BLOGS.length],
                                         ['Events', EVENTS.length],

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
 import { useContent } from '@/lib/contentContext';
-import { MEMBERS, TASKS, EVENTS, PROJECTS, DOMAINS, RESOURCES, ROLES } from '@/lib/data';
+import { TASKS, EVENTS, PROJECTS, DOMAINS, RESOURCES, ROLES } from '@/lib/data';
 
 export default function LeadDashboard() {
     const { user, loading } = useAuth();
@@ -14,7 +14,8 @@ export default function LeadDashboard() {
     const {
         blogs, addBlog, updateBlog,
         announcements, addAnnouncement, updateAnnouncement,
-        joinRequests, updateJoinRequest
+        joinRequests, updateJoinRequest,
+        members
     } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
@@ -39,7 +40,7 @@ export default function LeadDashboard() {
 
     if (loading || !user || user.role !== ROLES.LEAD) return null;
     const domain = DOMAINS.find(d => d.id === user?.domain);
-    const domainMembers = MEMBERS.filter(m => m.domain === user?.domain);
+    const domainMembers = members.filter(m => m.domain === user?.domain);
     const domainTasks = TASKS.filter(t => t.domain === user?.domain);
     const domainBlogs = blogs.filter(b => b.domain === user?.domain);
     const domainEvents = EVENTS.filter(e => e.domain === user?.domain || e.domain === null);

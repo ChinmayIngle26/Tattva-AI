@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { useSettings } from '@/lib/settings';
-import { TASKS, ANNOUNCEMENTS, EVENTS, RESOURCES, MEMBERS, DOMAINS, BLOGS, ROLES } from '@/lib/data';
+import { TASKS, ANNOUNCEMENTS, EVENTS, RESOURCES, DOMAINS, BLOGS, ROLES } from '@/lib/data';
+import { useContent } from '@/lib/contentContext';
 
 export default function MemberDashboard() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { settings } = useSettings();
+    const { members } = useContent();
     const [activeTab, setActiveTab] = useState('overview');
 
     // All useState hooks must be above early returns (rules-of-hooks)
@@ -24,7 +26,7 @@ export default function MemberDashboard() {
     }, [user, loading, router]);
 
     if (loading || !user || user.role !== ROLES.MEMBER) return null;
-    const memberData = MEMBERS.find(m => m.name === user?.name) || MEMBERS[0];
+    const memberData = members.find(m => m.name === user?.name) || members[0];
     const domain = DOMAINS.find(d => d.id === (user?.domain || memberData.domain));
     const myTasks = TASKS.filter(t => t.domain === memberData.domain);
     const myAnnouncements = ANNOUNCEMENTS.filter(a => a.type === 'global' || a.domain === memberData.domain);
