@@ -82,7 +82,7 @@ export default function JoinPage() {
                                 <label className="form-label">Branch *</label>
                                 <select className="form-select" required value={form.branch} onChange={e => setForm({ ...form, branch: e.target.value })}>
                                     <option value="">Select branch</option>
-                                    <option>CSE</option><option>IT</option><option>ECE</option><option>EEE</option><option>MECH</option><option>Other</option>
+                                    <option>CSE</option><option>AIML</option><option>IT</option><option>ECE</option><option>EEE</option><option>MECH</option><option>Other</option>
                                 </select>
                             </div>
                             <div className="form-group">
