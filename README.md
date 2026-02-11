@@ -1,6 +1,6 @@
-# Tattv AI — Student Technical Club Platform
+# Tattv.AI — Student Technical Club Platform
 
-A comprehensive management dashboard and public-facing website for Tattv AI, a student-led technical community.
+A comprehensive management dashboard and public-facing website for Tattv.AI, a student-led technical community.
 
 ## Features
 

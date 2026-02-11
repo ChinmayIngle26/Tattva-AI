@@ -22,7 +22,7 @@ export default function HomePage() {
           </div>
           <h1 className="hero-title animate-fade-in-up delay-1">
             Build the Future with<br />
-            <span className="text-gradient">Tattv AI</span>
+            <span className="text-gradient">Tattv.AI</span>
           </h1>
           <p className="hero-subtitle animate-fade-in-up delay-2">
             Explore AI/ML, Web Development, and Android — through workshops,
@@ -65,7 +65,7 @@ export default function HomePage() {
         <div className="container">
           <div className="section-header">
             <span className="section-label">Who We Are</span>
-            <h2>About <span className="text-gradient">Tattv AI</span></h2>
+            <h2>About <span className="text-gradient">Tattv.AI</span></h2>
             <p>A community of builders, thinkers, and innovators united by a passion for technology.</p>
           </div>
           <div className="about-grid">
@@ -124,7 +124,7 @@ export default function HomePage() {
           <div className="section-header">
             <span className="section-label">Our People</span>
             <h2>Meet the <span className="text-gradient">Team</span></h2>
-            <p>The leaders and mentors driving Tattv AI forward.</p>
+            <p>The leaders and mentors driving Tattv.AI forward.</p>
           </div>
 
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>Domain Leads</h3>
@@ -193,7 +193,7 @@ export default function HomePage() {
           <div className="cta-card">
             <div className="cta-glow" />
             <h2>Ready to Build the Future?</h2>
-            <p>Join Tattv AI and be part of a community that&apos;s shaping the next generation of technology.</p>
+            <p>Join Tattv.AI and be part of a community that&apos;s shaping the next generation of technology.</p>
             <div className="cta-actions">
               <Link href="/join" className="btn btn-primary btn-lg">Apply Now →</Link>
               <Link href="/events" className="btn btn-secondary btn-lg">Explore Events</Link>
