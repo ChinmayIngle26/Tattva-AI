@@ -51,7 +51,7 @@ export default function Footer() {
                 </div>
 
                 <div className="footer-bottom">
-                    <p>© 2026 Tattv AI. All rights reserved.</p>
+                    <p>© 2026 Tattv.AI. All rights reserved.</p>
                     <p>Built with 💜 by the Tattv Web Dev Team</p>
                 </div>
             </div>

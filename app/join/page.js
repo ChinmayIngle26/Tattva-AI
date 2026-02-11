@@ -45,7 +45,7 @@ export default function JoinPage() {
                         <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>🎉</div>
                         <h1 style={{ marginBottom: 'var(--space-md)' }}>Application Submitted!</h1>
                         <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', maxWidth: 500, margin: '0 auto var(--space-xl)' }}>
-                            Thank you for your interest in Tattv AI! Our team will review your application and get back to you soon.
+                            Thank you for your interest in Tattv.AI! Our team will review your application and get back to you soon.
                         </p>
                         <button className="btn btn-primary" onClick={() => { setSubmitted(false); setForm({ name: '', email: '', branch: '', year: '', domain: '', motivation: '' }); }}>
                             Submit Another
@@ -62,7 +62,7 @@ export default function JoinPage() {
                 <div className="container" style={{ maxWidth: 700 }}>
                     <div className="section-header">
                         <span className="section-label">Get Started</span>
-                        <h1>Join <span className="text-gradient">Tattv AI</span></h1>
+                        <h1>Join <span className="text-gradient">Tattv.AI</span></h1>
                         <p>Fill out the form below and take the first step towards building the future.</p>
                     </div>
 
